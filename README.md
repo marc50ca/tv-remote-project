@@ -1,26 +1,32 @@
-# 📺 TV Remote — Home Assistant Lovelace Card
+# 📺 TV Remote — Home Assistant Integration & Dashboard Card
 
-A full-featured TV remote control card for Home Assistant dashboards.
-Supports channel shortcuts, Roku app launchers, media controls, D-pad navigation,
-and fully customisable icons — all in a sleek dark cyberpunk UI.
-
-![TV Remote Card](docs/preview.png)
+A Home Assistant custom integration that bundles a full-featured Lovelace
+dashboard card for controlling your TV. Install the integration once and the
+card appears automatically in your dashboard card picker — no manual resource
+registration needed.
 
 ---
 
 ## ✨ Features
 
-- 🎛 Power, Volume, Channel, Mute controls
-- 🕹 D-pad navigation (Up / Down / Left / Right / OK)
-- 👍 Thumb Up / Thumb Down
-- 📺 14 channel shortcuts with custom icon support
-- 🎬 Media controls: Guide, Info, Play, Record, Pause, Skip Back, Skip Forward, Enter
-- 📡 Roku controls: Back, Home, Play/Pause, Rewind, Fast Forward
-- 🎮 Roku app launchers: Prime Video, Plex, Jellyfin
-- 🔢 Numeric keypad (traditional layout)
-- 🖼 Custom icons per button (upload file, drag & drop, or URL)
-- 📱 Fully responsive — works on tablets and mobile
-- 🔌 Native HA integration — no token, no config needed
+**Integration**
+- Auto-registers the Lovelace card as a frontend resource on setup
+- No access token required — uses native `hass.callService()`
+- Installs via HACS or manually
+
+**Dashboard Card**
+- Appears in the HA card picker as **TV Remote**
+- In-dashboard config panel
+- Full-width responsive layout — works on desktop, tablet, and mobile
+- Power, Volume, Channel, Mute controls
+- D-pad navigation (Up / Down / Left / Right / OK)
+- Thumb Up / Thumb Down
+- 14 channel shortcuts with custom icon support
+- Media controls: Guide, Info, Play, Record, Pause, Skip Back, Skip Forward, Enter
+- Roku controls: Back, Home, Play/Pause, Rewind, Fast Forward
+- Roku app launchers: Prime Video, Plex, Jellyfin
+- Traditional numeric keypad (0–9)
+- Custom icons per button (upload file, drag & drop, or URL)
 
 ---
 
@@ -28,65 +34,64 @@ and fully customisable icons — all in a sleek dark cyberpunk UI.
 
 ### HACS (Recommended)
 
-> **Prerequisites:** [HACS](https://hacs.xyz) must be installed.
+> **Prerequisite:** [HACS](https://hacs.xyz) must be installed.
 
-1. In Home Assistant, go to **HACS → Integrations**
-2. Click the **⋮ menu** → **Custom repositories**
-3. Add:
+1. **HACS → Integrations → ⋮ → Custom repositories**
+2. Add:
    - **URL:** `https://github.com/your-username/tv-remote-card`
    - **Category:** Integration
-4. Click **Add**, then find **TV Remote** in HACS and install it
-5. **Restart Home Assistant**
-6. Go to **Settings → Devices & Services → Add Integration**
-7. Search for **TV Remote** and click it → **Submit**
-8. Add the card to any dashboard:
-   ```yaml
-   type: custom:tv-remote-card
-   ```
+3. Find **TV Remote** in HACS and install
+4. **Restart Home Assistant**
+5. **Settings → Devices & Services → Add Integration → TV Remote → Submit**
+6. Add the card to any dashboard:
+
+```yaml
+type: custom:tv-remote-card
+```
+
+Or use the card picker — search for **TV Remote**.
 
 ### Manual
 
 1. Download `tv_remote.zip` from the [latest release](../../releases/latest)
-2. Extract and copy the `custom_components/tv_remote/` folder into `/config/custom_components/`
+2. Extract and copy `custom_components/tv_remote/` into `/config/custom_components/`
 3. **Restart Home Assistant**
-4. Go to **Settings → Devices & Services → Add Integration** → search **TV Remote** → Submit
-5. Add the card to any dashboard:
+4. **Settings → Devices & Services → Add Integration → TV Remote → Submit**
+5. Add to a dashboard:
    ```yaml
    type: custom:tv-remote-card
    ```
 
 ---
 
-## 🃏 Adding the Card
+## 🃏 Using the Card
 
-Once the integration is set up, add the card to any dashboard:
+Once the integration is set up, the card is available in two ways:
 
-**UI method:** Edit Dashboard → Add Card → search "Custom" → Manual card:
+**Card picker:** Edit any dashboard → Add Card → search **TV Remote**
+
+**YAML:**
 ```yaml
 type: custom:tv-remote-card
 ```
 
-**YAML method:**
-```yaml
-type: custom:tv-remote-card
-```
-
-No additional configuration required.
+No additional card configuration is required.
 
 ---
 
 ## 📋 Required Scripts
 
-The card calls HA scripts by entity ID. Create each script in **Settings → Automations & Scenes → Scripts**, or add them to `scripts.yaml`.
+The card calls HA scripts by entity ID. Create each one in
+**Settings → Automations & Scenes → Scripts** or in `scripts.yaml`.
 
 ### ⚡ Power
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | Power On | `script.turn_the_tv_on` |
 | Power Off | `script.turn_the_tv_off` |
 
 ### 🔊 Volume / Channel / Mute
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | VOL + | `script.broadlink_volume_up` |
 | VOL - | `script.broadlink_volume_down` |
@@ -95,7 +100,7 @@ The card calls HA scripts by entity ID. Create each script in **Settings → Aut
 | MUTE | `script.broadlink_mute` |
 
 ### 🕹 Navigation
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | UP | `script.broadlink_dpad_up` |
 | DOWN | `script.broadlink_dpad_down` |
@@ -106,7 +111,7 @@ The card calls HA scripts by entity ID. Create each script in **Settings → Aut
 | THUMB DOWN | `script.broadlink_thumb_down` |
 
 ### 🎬 Media
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | GUIDE | `script.broadlink_guide` |
 | INFO | `script.broadlink_info` |
@@ -117,20 +122,24 @@ The card calls HA scripts by entity ID. Create each script in **Settings → Aut
 | FWD ⏭ | `script.broadlink_skip_forward` |
 | ENTER | `script.broadlink_enter` |
 
-### 📡 Roku
-| Button | Entity ID |
+### 📡 Roku Controls
+| Button | Script Entity ID |
 |---|---|
 | BACK | `script.roku_back` |
 | HOME | `script.roku_home` |
 | PLAY/PAUSE | `script.roku_play_pause` |
 | REW | `script.roku_rewind` |
 | FWD | `script.roku_fast_forward` |
+
+### 🎮 Roku Apps
+| Button | Script Entity ID |
+|---|---|
 | Prime Video | `script.roku_launch_prime_video` |
 | Plex | `script.roku_launch_plex` |
 | Jellyfin | `script.roku_launch_jellyfin` |
 
 ### 📺 Channels
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | CHEX | `script.channel_chex` |
 | TSN | `script.channel_tsn` |
@@ -148,7 +157,7 @@ The card calls HA scripts by entity ID. Create each script in **Settings → Aut
 | CBC | `script.channel_cbc` |
 
 ### 🔢 Keypad
-| Button | Entity ID |
+| Button | Script Entity ID |
 |---|---|
 | 1–9 | `script.broadlink_key_1` … `script.broadlink_key_9` |
 | 0 | `script.zero` |
@@ -157,46 +166,51 @@ The card calls HA scripts by entity ID. Create each script in **Settings → Aut
 
 ## 🎨 Custom Icons
 
-Hover (or long-press on touch screens) any channel or media button to reveal a ⚙ gear icon.
-Click it to open the icon editor:
+Hover any channel or media button to reveal a ⚙ gear icon.
+On touch screens it is always visible. Click to:
 
-- **Upload** a PNG, JPG, or SVG file via click or drag & drop
-- **Paste a URL** — e.g. `/local/pictures/tsn_logo.png` for files in your HA `www/` folder
-- **Reset** to restore the default icon
+- **Upload** a PNG, JPG, or SVG via click or drag & drop
+- **Paste a URL** — e.g. `/local/pictures/tsn_logo.png`
+- **Reset** to the default icon
 
-Icons are stored in the browser's `localStorage` and persist across page refreshes.
+Icons are stored in browser `localStorage` and persist across refreshes.
 
-> **Default:** The CHEX button defaults to `/local/pictures/gb1.png`. Place your logo at `config/www/pictures/gb1.png`.
+> The CHEX button defaults to `/local/pictures/gb1.png`.
+> Place your logo at `config/www/pictures/gb1.png`.
 
 ---
 
 ## 🗂 Project Structure
 
 ```
-tv_remote/
-├── hacs.json                        # HACS metadata
-├── README.md                        # This file
-├── CHANGELOG.md                     # Version history
-├── docs/
-│   └── preview.png                  # Screenshot
+tv-remote-card/
+├── hacs.json
+├── README.md
+├── CHANGELOG.md
+├── LICENSE
+├── .github/
+│   ├── workflows/
+│   │   ├── validate.yml      # hassfest + HACS checks on every push
+│   │   └── release.yml       # auto-builds release zip on git tag
+│   └── ISSUE_TEMPLATE/
 └── custom_components/
     └── tv_remote/
-        ├── manifest.json            # HA integration manifest
-        ├── __init__.py              # Integration setup + JS serving
-        ├── config_flow.py           # Settings → Integrations UI
-        ├── const.py                 # Constants
-        ├── tv-remote-card.js        # Lovelace card (Web Component)
-        └── translations/
-            └── en.json              # UI strings
+        ├── manifest.json
+        ├── __init__.py       # serves JS, registers Lovelace resource
+        ├── config_flow.py    # Settings → Integrations UI
+        ├── const.py
+        ├── strings.json
+        ├── translations/
+        │   └── en.json
+        └── tv-remote-card.js # the Lovelace Web Component card
 ```
 
 ---
 
 ## 🤝 Contributing
 
-Pull requests are welcome. For major changes, please open an issue first.
+Pull requests are welcome. For major changes please open an issue first.
 
 ## 📄 Licence
 
 MIT
-# tv-remote-project
