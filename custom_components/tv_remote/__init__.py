@@ -28,13 +28,8 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TV Remote from a config entry."""
-
-    # 1. Serve the JS card file over HTTP
     hass.http.register_view(TvRemoteCardView())
-
-    # 2. Register as a Lovelace resource so it appears in the card picker
-    await _register_lovelace_resource(hass, entry)
-
+    await _register_lovelace_resource(hass)
     _LOGGER.info(
         "TV Remote card registered at %s — add to any dashboard: "
         "type: custom:tv-remote-card",
@@ -48,31 +43,30 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def _register_lovelace_resource(
-    hass: HomeAssistant, entry: ConfigEntry
-) -> None:
-    """Register the card JS as a Lovelace frontend resource."""
+async def _register_lovelace_resource(hass: HomeAssistant) -> None:
+    """Register the card JS as a Lovelace frontend resource.
+
+    Uses only public HA APIs — no private imports.
+    Falls back gracefully across HA versions.
+    """
+    # Method 1: lovelace storage collection (HA 2022+, public hass.data key)
     try:
-        # HA 2023.6+ stores resources in the lovelace component data
-        from homeassistant.components.lovelace import _get_lovelace_data  # noqa: PLC0415
-
-        lovelace_data = _get_lovelace_data(hass)
-        resources = lovelace_data.get("resources")
-        if resources is not None:
-            await resources.async_load(True)
-            existing_urls = {r["url"] for r in resources.async_items()}
-            if CARD_URL not in existing_urls:
-                await resources.async_create_item(
-                    {"res_type": "module", "url": CARD_URL}
-                )
-                _LOGGER.debug("Lovelace resource registered: %s", CARD_URL)
+        lovelace = hass.data.get("lovelace")
+        if isinstance(lovelace, dict):
+            resources = lovelace.get("resources")
+            if resources is not None:
+                await resources.async_load(True)
+                existing = {r["url"] for r in resources.async_items()}
+                if CARD_URL not in existing:
+                    await resources.async_create_item(
+                        {"res_type": "module", "url": CARD_URL}
+                    )
+                    _LOGGER.debug("Lovelace resource registered: %s", CARD_URL)
                 return
-            _LOGGER.debug("Lovelace resource already registered: %s", CARD_URL)
-            return
-    except Exception:  # noqa: BLE001
-        pass  # Fall through to legacy method
+    except Exception as err:  # noqa: BLE001
+        _LOGGER.debug("Lovelace storage registration skipped: %s", err)
 
-    # Fallback: add_extra_js_url works on all HA versions
+    # Method 2: add_extra_js_url (public, all HA versions)
     try:
         from homeassistant.components.frontend import add_extra_js_url  # noqa: PLC0415
         add_extra_js_url(hass, CARD_URL)
@@ -80,8 +74,8 @@ async def _register_lovelace_resource(
     except Exception as err:  # noqa: BLE001
         _LOGGER.warning(
             "Could not auto-register Lovelace resource (%s). "
-            "Please add manually in Settings → Dashboards → Resources: "
-            "URL=%s  Type=JavaScript Module",
+            "Add manually: Settings → Dashboards → Resources → "
+            "URL: %s  Type: JavaScript Module",
             err,
             CARD_URL,
         )

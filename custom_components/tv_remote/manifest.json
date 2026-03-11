@@ -2,9 +2,10 @@
   "domain": "tv_remote",
   "name": "TV Remote",
   "version": "1.0.0",
-  "documentation": "https://github.com/marc50ca/tv-remote-card",
-  "issue_tracker": "https://github.com/marc50ca/tv-remote-card/issues",
-  "codeowners": ["@marc50ca"],
-  "iot_class": "local_push",
+  "documentation": "https://github.com/your-username/tv-remote-card",
+  "issue_tracker": "https://github.com/your-username/tv-remote-card/issues",
+  "codeowners": [],
+  "iot_class": "local_polling",
+  "integration_type": "service",
   "config_flow": true
 }

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
 
@@ -14,9 +15,8 @@ class TvRemoteConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict | None = None
-    ) -> config_entries.FlowResult:
+    ) -> FlowResult:
         """Handle the initial setup step."""
-
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 

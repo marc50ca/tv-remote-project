@@ -8,7 +8,6 @@
     },
     "abort": {
       "single_instance_allowed": "Only one TV Remote integration can be configured."
-    },
-    "error": {}
+    }
   }
 }
